@@ -1,16 +1,14 @@
-/* ----------- CONTAINER GERAL ----------- */
 .home-container {
   width: 100%;
   min-height: 100vh;
   background: #f5f6fa;
-  padding-top: 120px; /* espaço pro header fixo */
+  padding-top: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: 'Poppins', sans-serif;
 }
 
-/* ----------- HEADER ----------- */
 .home-header {
   position: fixed;
   top: 0;
@@ -71,7 +69,6 @@
   }
 }
 
-/* ----------- ABAS ----------- */
 .tabs {
   display: flex;
   gap: 20px;
@@ -98,14 +95,12 @@
   }
 }
 
-/* ----------- CONTEÚDO ----------- */
 .tab-content {
   margin-top: 40px;
   width: 90%;
   max-width: 900px;
 }
 
-/* ----------- PERFIL ----------- */
 .perfil-section {
   width: 100%;
   display: flex;
@@ -188,7 +183,6 @@
   }
 }
 
-/* ----------- PAINEL ADMIN ----------- */
 .admin-section {
   width: 100%;
   background: white;
@@ -235,7 +229,6 @@
   }
 }
 
-/* ----------- CARREGANDO ----------- */
 .loading {
   margin-top: 160px;
   text-align: center;
@@ -246,7 +239,6 @@
   }
 }
 
-/* ----------- ERRO ----------- */
 .error-message {
   background: #ffecec;
   padding: 20px;
@@ -265,7 +257,6 @@
   }
 }
 
-/* ----------- RESPONSIVIDADE ----------- */
 @media (max-width: 600px) {
   .home-header {
     padding: 0 15px;

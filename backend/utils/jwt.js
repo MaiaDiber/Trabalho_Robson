@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = 'ViaSaúde'; // Mesma chave que você usou no controller
+const JWT_SECRET = 'ViaSaúde';  
 
-// Middleware para verificar autenticação
 export function getAuthentication() {
     return (req, resp, next) => {
         try {
@@ -16,7 +15,7 @@ export function getAuthentication() {
 
             const decoded = jwt.verify(token, JWT_SECRET);
             
-            // Adiciona os dados do usuário na requisição
+            
             req.user = {
                 id: decoded.id,
                 nome: decoded.nome,
@@ -48,7 +47,7 @@ export function getAuthentication() {
     };
 }
 
-// Middleware para verificar se é admin
+
 export function verificarAdmin() {
     return (req, resp, next) => {
         try {
@@ -69,12 +68,11 @@ export function verificarAdmin() {
     };
 }
 
-// Função para gerar token (caso queira usar em outros lugares)
+
 export function gerarToken(payload) {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 }
 
-// Função para verificar token sem middleware
 export function verificarToken(token) {
     try {
         return jwt.verify(token, JWT_SECRET);
@@ -83,7 +81,7 @@ export function verificarToken(token) {
     }
 }
 
-// Função para decodificar token sem verificar expiração
+
 export function decodificarToken(token) {
     return jwt.decode(token);
 }

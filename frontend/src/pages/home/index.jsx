@@ -31,29 +31,29 @@ export default function Home() {
                 setUsuario(userData)
             }
 
-            console.log('🔑 Token:', token)
-            console.log('👤 Usuário storage:', userStorage)
+            console.log(' Token:', token)
+            console.log(' Usuário storage:', userStorage)
 
-            // Carregar dados completos do perfil
+           
             const perfilResponse = await api.get('/perfil')
-            console.log('✅ Perfil carregado:', perfilResponse.data)
+            console.log(' Perfil carregado:', perfilResponse.data)
             setDadosCompletos(perfilResponse.data.data?.usuario)
 
-            // Se for admin, carregar lista de usuários (AGORA DEPOIS de setar o usuario)
+            
             const userData = JSON.parse(userStorage || '{}')
             if (userData?.tipo === 'admin') {
-                console.log('👑 Carregando lista de usuários...')
+                console.log(' Carregando lista de usuários...')
                 const usuariosResponse = await api.get('/usuarios')
                 setUsuarios(usuariosResponse.data.data?.usuarios || [])
             }
 
         } catch (error) {
-            console.error('❌ Erro ao carregar dados:', error)
+            console.error(' Erro ao carregar dados:', error)
             if (error.response?.status === 401) {
-                console.log('🔒 Token inválido ou expirado')
+                console.log(' Token inválido ou expirado')
                 logout()
             } else {
-                console.log('📋 Dados do erro:', error.response?.data)
+                console.log(' Dados do erro:', error.response?.data)
             }
         } finally {
             setCarregando(false)
@@ -61,7 +61,7 @@ export default function Home() {
     }
 
     function logout() {
-        console.log('🚪 Fazendo logout...')
+        console.log(' Fazendo logout...')
         localStorage.removeItem('TOKEN')
         localStorage.removeItem('usuario')
         navigate('/')
@@ -87,7 +87,7 @@ export default function Home() {
         )
     }
 
-    // Se não tem usuário após carregar, faz logout
+    
     if (!usuario) {
         logout()
         return null
@@ -95,10 +95,10 @@ export default function Home() {
 
     return (
         <div className="home-container">
-            {/* Header */}
+            
             <header className="home-header">
                 <div className="user-welcome">
-                    <h1>Olá, {usuario?.nome}! 👋</h1>
+                    <h1>Olá, {usuario?.nome}! </h1>
                     <span className={`user-type ${usuario?.tipo}`}>
                         {usuario?.tipo}
                     </span>
@@ -108,13 +108,13 @@ export default function Home() {
                 </button>
             </header>
 
-            {/* Resto do seu código permanece igual */}
+            
             <nav className="tabs">
                 <button 
                     className={`tab ${abaAtiva === 'perfil' ? 'active' : ''}`}
                     onClick={() => navigate('/Perfil')}
                 >
-                    📊 Meu Perfil
+                     Meu Perfil
                 </button>
                 
                 {usuario?.tipo === 'admin' && (
@@ -122,15 +122,15 @@ export default function Home() {
                         className={`tab ${abaAtiva === 'admin' ? 'active' : ''}`}
                         onClick={() => setAbaAtiva('admin')}
                     >
-                        👑 Gerenciar Usuários
+                         Gerenciar Usuários
                     </button>
                 )}
             </nav>
 
-            {/* Conteúdo das Abas */}
+            
             <div className="tab-content">
                 
-                {/* ABA: PERFIL */}
+                
                 {abaAtiva === 'perfil' && dadosCompletos && (
                     <div className="perfil-section">
                         <div className="profile-card">
@@ -161,7 +161,7 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* ABA: ADMIN - Simplificada para teste */}
+                
                 {abaAtiva === 'admin' && usuario?.tipo === 'admin' && (
                     <div className="admin-section">
                         <h3>Painel Administrativo</h3>
@@ -180,10 +180,10 @@ export default function Home() {
                     </div>
                 )}
 
-                {/* Mensagem se não carregou dados */}
+                
                 {abaAtiva === 'perfil' && !dadosCompletos && (
                     <div className="error-message">
-                        <p>❌ Não foi possível carregar os dados do perfil</p>
+                        <p> Não foi possível carregar os dados do perfil</p>
                         <button onClick={carregarDados}>Tentar novamente</button>
                     </div>
                 )}

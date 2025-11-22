@@ -59,35 +59,35 @@ export default function Login() {
         senha: formData.senha
       };
 
-      console.log('📤 Enviando login...');
+      console.log(' Enviando login...');
       const response = await api.post('/login', body);
-      console.log('✅ Login bem-sucedido:', response.data);
+      console.log(' Login bem-sucedido:', response.data);
       
       const token = response.data.token;
       const usuario = response.data.usuario;
 
-      // Salvar no localStorage
+      
       localStorage.setItem("TOKEN", token);
       localStorage.setItem("usuario", JSON.stringify(usuario));
       
       alert(response.data.mensagem || 'Login realizado com sucesso!');
 
-      // DEBUG: Verificar antes de redirecionar
-      console.log('🔄 Tentando redirecionar...');
+      
+      console.log(' Tentando redirecionar...');
       console.log('Usuário:', usuario);
       console.log('Tipo:', usuario.tipo);
       
-      // Redirecionar
+      
       if (usuario.tipo === 'admin') {
-        console.log('🎯 Indo para Admin');
+        console.log(' Indo para Admin');
         navigate('/Admin');
       } else {
-        console.log('🎯 Indo para Home');
+        console.log(' Indo para Home');
         navigate('/Home');
       }
 
     } catch (error) {
-      console.error('❌ Erro no login:', error);
+      console.error(' Erro no login:', error);
       alert('Erro ao fazer login: ' + (error.response?.data?.erro || error.message));
     }
   } else {

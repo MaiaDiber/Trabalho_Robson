@@ -12,7 +12,7 @@ export async function inserirUsuario(usuario) {
         usuario.data_nascimento,
         usuario.email,
         usuario.senha,
-        usuario.tipo || 'paciente' // padrão é paciente
+        usuario.tipo || 'paciente'
     ]);
 
     return resposta.insertId;

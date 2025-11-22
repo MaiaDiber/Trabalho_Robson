@@ -7,19 +7,16 @@ const endpoints = Router();
 const autenticador = getAuthentication();
 const verificadorAdmin = verificarAdmin();
 
-// CADASTRAR USUÁRIO
 endpoints.post('/cadastrar', async (req, resp) => {
     try {
         const dados = req.body;
 
-        // Validações
         if (!dados.nome || !dados.data_nascimento || !dados.email || !dados.senha) {
             return resp.status(400).send({ 
                 erro: 'Preencha todos os campos obrigatórios: nome, data_nascimento, email e senha' 
             });
         }
 
-        // Verificar se email já existe
         const emailExistente = await repo.buscarUsuarioPorEmail(dados.email);
         if (emailExistente) {
             return resp.status(409).send({ 
@@ -27,7 +24,6 @@ endpoints.post('/cadastrar', async (req, resp) => {
             });
         }
 
-        // Validar data (mínimo 13 anos)
         const dataNasc = new Date(dados.data_nascimento);
         const hoje = new Date();
         const idade = hoje.getFullYear() - dataNasc.getFullYear();
@@ -38,7 +34,6 @@ endpoints.post('/cadastrar', async (req, resp) => {
             });
         }
 
-        // Inserir usuário
         const idUsuario = await repo.inserirUsuario({
             nome: dados.nome,
             data_nascimento: dados.data_nascimento,
@@ -58,7 +53,6 @@ endpoints.post('/cadastrar', async (req, resp) => {
     }
 });
 
-// LOGIN
 endpoints.post('/login', async (req, resp) => {
     try {
         const { email, senha } = req.body;
@@ -102,7 +96,6 @@ endpoints.post('/login', async (req, resp) => {
     }
 });
 
-// PERFIL DO USUÁRIO LOGADO
 endpoints.get('/perfil', autenticador, async (req, resp) => {
     try {
         const idUsuario = req.user.id;
@@ -120,7 +113,6 @@ endpoints.get('/perfil', autenticador, async (req, resp) => {
     }
 });
 
-// ATUALIZAR PERFIL
 endpoints.put('/perfil', autenticador, async (req, resp) => {
     try {
         const idUsuario = req.user.id;
@@ -132,7 +124,6 @@ endpoints.put('/perfil', autenticador, async (req, resp) => {
             });
         }
 
-        // Verificar se outro usuário já usa o email
         const usuarioComEmail = await repo.buscarUsuarioPorEmail(email);
         if (usuarioComEmail && usuarioComEmail.id !== idUsuario) {
             return resp.status(409).send({ 
@@ -158,7 +149,6 @@ endpoints.put('/perfil', autenticador, async (req, resp) => {
     }
 });
 
-// ALTERAR SENHA
 endpoints.put('/perfil/senha', autenticador, async (req, resp) => {
     try {
         const idUsuario = req.user.id;
@@ -170,7 +160,6 @@ endpoints.put('/perfil/senha', autenticador, async (req, resp) => {
             });
         }
 
-        // Verificar senha atual
         const usuario = await repo.verificarLogin(req.user.email, senha_atual);
         if (!usuario) {
             return resp.status(401).send({ 
@@ -192,7 +181,6 @@ endpoints.put('/perfil/senha', autenticador, async (req, resp) => {
     }
 });
 
-// LISTAR TODOS OS USUÁRIOS (APENAS ADMIN)
 endpoints.get('/usuarios', autenticador, verificadorAdmin, async (req, resp) => {
     try {
         const usuarios = await repo.listarUsuarios();
@@ -203,7 +191,6 @@ endpoints.get('/usuarios', autenticador, verificadorAdmin, async (req, resp) => 
     }
 });
 
-// LISTAR ADMINS (APENAS ADMIN)
 endpoints.get('/admins', autenticador, verificadorAdmin, async (req, resp) => {
     try {
         const admins = await repo.listarAdmins();
@@ -214,7 +201,6 @@ endpoints.get('/admins', autenticador, verificadorAdmin, async (req, resp) => {
     }
 });
 
-// PROMOVER USUÁRIO PARA ADMIN (APENAS ADMIN)
 endpoints.put('/usuarios/:id/promover', autenticador, verificadorAdmin, async (req, resp) => {
     try {
         const idUsuario = req.params.id;
@@ -233,12 +219,10 @@ endpoints.put('/usuarios/:id/promover', autenticador, verificadorAdmin, async (r
     }
 });
 
-// REBAIXAR ADMIN PARA PACIENTE (APENAS ADMIN)
 endpoints.put('/usuarios/:id/rebaixar', autenticador, verificadorAdmin, async (req, resp) => {
     try {
         const idUsuario = req.params.id;
 
-        // Não permitir rebaixar a si mesmo
         if (idUsuario == req.user.id) {
             return resp.status(400).send({ 
                 erro: 'Você não pode rebaixar a si mesmo' 
@@ -259,12 +243,10 @@ endpoints.put('/usuarios/:id/rebaixar', autenticador, verificadorAdmin, async (r
     }
 });
 
-// DELETAR USUÁRIO (APENAS ADMIN)
 endpoints.delete('/usuarios/:id', autenticador, verificadorAdmin, async (req, resp) => {
     try {
         const idUsuario = req.params.id;
 
-        // Não permitir deletar a si mesmo
         if (idUsuario == req.user.id) {
             return resp.status(400).send({ 
                 erro: 'Você não pode deletar a sua própria conta' 

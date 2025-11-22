@@ -1,4 +1,3 @@
-// src/pages/Perfil/Perfil.jsx
 import { useEffect, useState } from "react";
 import './Perfil.scss';
 

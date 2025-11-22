@@ -1,25 +1,8 @@
-// Variáveis
-$primary-color: #007bff;
-$primary-hover: #0056b3;
-$error-color: #dc3545;
-$text-color: #333;
-$border-color: #ddd;
-$background-color: #f8f9fa;
 
-// Mixins
-@mixin flex-center {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-@mixin transition($property: all, $duration: 0.3s) {
-  transition: $property $duration ease;
-}
-
-// Estilos principais
-.login-container {
-  @include flex-center;
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 20px;
@@ -33,7 +16,7 @@ $background-color: #f8f9fa;
   padding: 40px;
   width: 100%;
   max-width: 400px;
-  @include transition;
+  transition: all 0.3s ease;
 
   &:hover {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -41,7 +24,7 @@ $background-color: #f8f9fa;
 }
 
 .login-title {
-  color: $text-color;
+  color: #333;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 8px;
@@ -49,7 +32,7 @@ $background-color: #f8f9fa;
 }
 
 .login-subtitle {
-  color: $text-color, 20%;
+  color: #666;
   text-align: center;
   margin-bottom: 30px;
   font-size: 0.95rem;
@@ -69,38 +52,40 @@ $background-color: #f8f9fa;
 .form-label {
   font-weight: 600;
   margin-bottom: 8px;
-  color: $text-color;
+  color: #333;
   font-size: 0.9rem;
 }
 
 .form-input {
   padding: 12px 16px;
-  border: 2px solid $border-color;
+  border: 2px solid #dddddd;
   border-radius: 8px;
   font-size: 1rem;
-  @include transition;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
   }
 
   &.error {
-    border-color: $error-color;
+    border-color: #dc3545;
     
     &:focus {
-      box-shadow: 0 0 0 3px rgba($error-color, 0.1);
+      box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
     }
   }
 
   &::placeholder {
-    color: $text-color, 50%;
+    color: #999;
   }
 }
 
 .error-message {
-  color: $error-color;
+  color: #dc3545;
   font-size: 0.8rem;
   margin-top: 5px;
   font-weight: 500;
@@ -119,30 +104,30 @@ $background-color: #f8f9fa;
   gap: 8px;
   cursor: pointer;
   font-size: 0.9rem;
-  color: $text-color, 20%;
+  color: #666;
 
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: $primary-color;
+    accent-color: #007bff;
   }
 }
 
 .forgot-password {
-  color: $primary-color;
+  color: #007bff;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
-  @include transition;
+  transition: all 0.3s ease;
 
   &:hover {
-    color: $primary-hover;
+    color: #0056b3;
     text-decoration: underline;
   }
 }
 
 .submit-button {
-  background: linear-gradient(135deg, $primary-color, $primary-color, 10%);
+  background: linear-gradient(135deg, #007bff, #0056b3);
   color: white;
   border: none;
   padding: 14px 20px;
@@ -150,13 +135,14 @@ $background-color: #f8f9fa;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  @include transition;
+  transition: all 0.3s ease;
   margin-top: 10px;
+  width: 100%;
 
   &:hover:not(:disabled) {
-    background: linear-gradient(135deg, $primary-hover, $primary-hover, 10%);
+    background: linear-gradient(135deg, #0056b3, #004085);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($primary-color, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
   }
 
   &:active {
@@ -164,6 +150,7 @@ $background-color: #f8f9fa;
   }
 
   &:disabled {
+    background: #6c757d;
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
@@ -199,13 +186,13 @@ $background-color: #f8f9fa;
   display: flex;
   align-items: center;
   margin: 25px 0;
-  color:   $text-color, 40%;
+  color: #666;
 
   &::before,
   &::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid #dddddd;
   }
 
   span {
@@ -226,17 +213,18 @@ $background-color: #f8f9fa;
   justify-content: center;
   gap: 12px;
   padding: 12px 20px;
-  border: 2px solid $border-color;
+  border: 2px solid #dddddd;
   border-radius: 8px;
   background: white;
-  color: $text-color;
+  color: #333;
   font-weight: 600;
   cursor: pointer;
-  @include transition;
+  transition: all 0.3s ease;
+  width: 100%;
 
   &:hover {
-    border-color: $primary-color;
-    background: $primary-color, 45%;
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.05);
   }
 
   &.google {
@@ -251,29 +239,28 @@ $background-color: #f8f9fa;
   text-align: center;
   margin-top: 25px;
   padding-top: 20px;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid #dddddd;
 
   p {
-    color: $text-color, 20%;
+    color: #666;
     margin: 0;
   }
 
   .link-button {
-    color: $primary-color;
+    color: #007bff;
     background: none;
     border: none;
     text-decoration: none;
     font-weight: 600;
     cursor: pointer;
-    @include transition;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: $primary-hover;
+      color: #0056b3;
       text-decoration: underline;
     }
   }
 }
-
 
 @media (max-width: 480px) {
   .login-container {
