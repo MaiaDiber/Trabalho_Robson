@@ -1,216 +1,255 @@
-import React, { useState } from 'react';
-import './Register.scss';
+import { useState } from 'react'
+import api from '../../axios'
+import { useNavigate } from 'react-router'
+import './Cadastro.scss'
 
-export default function Cadastro()  {
-     const [formData, setFormData] = useState({
-    nome: '',
-    dataNascimento: '',
-    email: '',
-    senha: '',
-    tipoUsuario: 'usuario'
-  });
+export default function Cadastro() {
+    const [nome, setNome] = useState('')
+    const [dataNascimento, setDataNascimento] = useState('')
+    const [email, setEmail] = useState('')
+    const [senha, setSenha] = useState('')
+    const [tipoUsuario, setTipoUsuario] = useState('paciente')
+    const [showPassword, setShowPassword] = useState(false)
+    const [erros, setErros] = useState({})
+    const [carregando, setCarregando] = useState(false)
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate()
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-    
-    // Limpar erro do campo quando usuário começar a digitar
-    if (errors[name]) {
-      setErrors(prevState => ({
-        ...prevState,
-        [name]: ''
-      }));
-    }
-  };
+    function validarCampos() {
+        const novosErros = {}
 
-  const validateForm = () => {
-    const newErrors = {};
+        if (!nome.trim()) 
+            novosErros.nome = "Informe o nome completo"
+        else if (nome.trim().length < 2)
+            novosErros.nome = "Nome deve ter pelo menos 2 caracteres"
 
-    // Validação do nome
-    if (!formData.nome.trim()) {
-      newErrors.nome = 'Nome é obrigatório';
-    } else if (formData.nome.trim().length < 2) {
-      newErrors.nome = 'Nome deve ter pelo menos 2 caracteres';
-    }
+        if (!dataNascimento) 
+            novosErros.dataNascimento = "Informe a data de nascimento"
+        else {
+            const birthDate = new Date(dataNascimento)
+            const today = new Date()
+            const age = today.getFullYear() - birthDate.getFullYear()
+            if (age < 13) 
+                novosErros.dataNascimento = "Você deve ter pelo menos 13 anos"
+        }
 
-    // Validação da data de nascimento
-    if (!formData.dataNascimento) {
-      newErrors.dataNascimento = 'Data de nascimento é obrigatória';
-    } else {
-      const birthDate = new Date(formData.dataNascimento);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      
-      if (age < 13) {
-        newErrors.dataNascimento = 'Você deve ter pelo menos 13 anos';
-      }
+        if (!email.trim()) 
+            novosErros.email = "Informe o e-mail"
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            novosErros.email = "E-mail inválido"
+
+        if (!senha.trim()) 
+            novosErros.senha = "Informe a senha"
+        else if (senha.length < 6)
+            novosErros.senha = "Senha deve ter pelo menos 6 caracteres"
+
+        setErros(novosErros)
+        return Object.keys(novosErros).length === 0
     }
 
-    // Validação do email
-    if (!formData.email) {
-      newErrors.email = 'Email é obrigatório';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+    async function cadastrar() {
+        try {
+            if (!validarCampos()) {
+                alert("Por favor, corrija os erros no formulário.")
+                return
+            }
+
+            setCarregando(true)
+
+            const body = {
+                "nome": nome,
+                "data_nascimento": dataNascimento,
+                "email": email,
+                "senha": senha,
+                "tipo": tipoUsuario
+            }
+
+            const response = await api.post('/cadastrar', body)
+            
+            alert(response.data.mensagem || 'Cadastro realizado com sucesso!')
+            
+            // Limpar formulário
+            setNome('')
+            setDataNascimento('')
+            setEmail('')
+            setSenha('')
+            setTipoUsuario('paciente')
+
+            // Redirecionar para login
+            setTimeout(() => {
+                navigate('/')
+            }, 1500)
+
+        } catch (error) {
+            alert('Erro ao cadastrar: ' + (error.response?.data?.erro || error.message))
+        } finally {
+            setCarregando(false)
+        }
     }
 
-    // Validação da senha
-    if (!formData.senha) {
-      newErrors.senha = 'Senha é obrigatória';
-    } else if (formData.senha.length < 6) {
-      newErrors.senha = 'Senha deve ter pelo menos 6 caracteres';
+    const togglePasswordVisivel = () => {
+        setShowPassword(!showPassword)
     }
 
-    return newErrors;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const formErrors = validateForm();
-    
-    if (Object.keys(formErrors).length === 0) {
-      // Simular envio para API
-      try {
-        console.log('Dados do formulário:', formData);
-        // Aqui você faria a chamada para sua API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        alert('Cadastro realizado com sucesso!');
-        // Limpar formulário após sucesso
-        setFormData({
-          nome: '',
-          dataNascimento: '',
-          email: '',
-          senha: '',
-          tipoUsuario: 'usuario'
-        });
-      } catch (error) {
-        alert('Erro ao realizar cadastro. Tente novamente.');
-      }
-    } else {
-      setErrors(formErrors);
+    const limparErro = (campo) => {
+        if (erros[campo]) {
+            setErros({ ...erros, [campo]: '' })
+        }
     }
-    
-    setIsSubmitting(false);
-  };
 
-  return (
-    <div className="register-container">
-      <div className="register-card">
-        <h1 className="register-title">Criar Conta</h1>
-        <p className="register-subtitle">Preencha os dados abaixo para se cadastrar</p>
-        
-        <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-group">
-            <label htmlFor="nome" className="form-label">
-              Nome Completo *
-            </label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              className={`form-input ${errors.nome ? 'error' : ''}`}
-              placeholder="Digite seu nome completo"
-            />
-            {errors.nome && <span className="error-message">{errors.nome}</span>}
-          </div>
+    return (
+        <section className='all-cadastro'>
+            <section className='container-cadastro'>
+                <img className='logosite-cadastro' src='/assets/Images/logo_ViaSaúde.png' height={70} alt='' />
+                <div className='Cadastro'>
+                    <div className='Cadastro-linha'>
+                        <h1>Cadastro</h1>
+                        <div className='linha-cadastro'></div>
+                    </div>
 
-          <div className="form-group">
-            <label htmlFor="dataNascimento" className="form-label">
-              Data de Nascimento *
-            </label>
-            <input
-              type="date"
-              id="dataNascimento"
-              name="dataNascimento"
-              value={formData.dataNascimento}
-              onChange={handleChange}
-              className={`form-input ${errors.dataNascimento ? 'error' : ''}`}
-            />
-            {errors.dataNascimento && <span className="error-message">{errors.dataNascimento}</span>}
-          </div>
+                    <div className="dados-cadastro">
+                        <label> 
+                            <p>Nome Completo *</p>
+                            <input 
+                                type="text" 
+                                placeholder='Insira seu nome completo' 
+                                value={nome}
+                                onChange={(e) => {
+                                    setNome(e.target.value)
+                                    limparErro('nome')
+                                }}
+                                className={erros.nome ? 'erro' : ''}
+                                disabled={carregando}
+                            />
+                            {erros.nome && (
+                                <span className="msg-erro">{erros.nome}</span>
+                            )}
+                        </label>
+                        
+                        <label> 
+                            <p>Data de Nascimento *</p>
+                            <input 
+                                type="date" 
+                                value={dataNascimento}
+                                onChange={(e) => {
+                                    setDataNascimento(e.target.value)
+                                    limparErro('dataNascimento')
+                                }}
+                                className={erros.dataNascimento ? 'erro' : ''}
+                                disabled={carregando}
+                            />
+                            {erros.dataNascimento && (
+                                <span className="msg-erro">{erros.dataNascimento}</span>
+                            )}
+                        </label>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder="seu@email.com"
-            />
-            {errors.email && <span className="error-message">{errors.email}</span>}
-          </div>
+                        <label> 
+                            <p>E-mail *</p>
+                            <input 
+                                type="email" 
+                                placeholder='Insira seu e-mail' 
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value)
+                                    limparErro('email')
+                                }}
+                                className={erros.email ? 'erro' : ''}
+                                disabled={carregando}
+                            />
+                            {erros.email && (
+                                <span className="msg-erro">{erros.email}</span>
+                            )}
+                        </label>
+                        
+                        <label> 
+                            <p>Senha *</p>
+                            <div className="password-input-container">
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    value={senha}
+                                    onChange={(e) => {
+                                        setSenha(e.target.value)
+                                        limparErro('senha')
+                                    }}
+                                    placeholder='Mínimo 6 caracteres'
+                                    className={erros.senha ? 'erro' : ''}
+                                    disabled={carregando}
+                                />
+                                
+                                <button 
+                                    onClick={togglePasswordVisivel} 
+                                    type='button' 
+                                    className="toggle-password-btn"
+                                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                                    disabled={carregando}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        {showPassword ? (
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                                <line x1="2" y1="2" x2="22" y2="22"/>
+                                            </svg>
+                                        ) : (
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                        )}
+                                    </svg>
+                                </button>
+                            </div>
+                            {erros.senha && (
+                                <span className="msg-erro">{erros.senha}</span>
+                            )}
+                        </label>
 
-          <div className="form-group">
-            <label htmlFor="senha" className="form-label">
-              Senha *
-            </label>
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              value={formData.senha}
-              onChange={handleChange}
-              className={`form-input ${errors.senha ? 'error' : ''}`}
-              placeholder="Mínimo 6 caracteres"
-            />
-            {errors.senha && <span className="error-message">{errors.senha}</span>}
-          </div>
+                        <label className="tipo-usuario">
+                            <p>Tipo de Usuário</p>
+                            <div className="radio-group">
+                                <label className="radio-option">
+                                    <input
+                                        type="radio"
+                                        name="tipoUsuario"
+                                        value="paciente"
+                                        checked={tipoUsuario === 'paciente'}
+                                        onChange={(e) => setTipoUsuario(e.target.value)}
+                                        disabled={carregando}
+                                    />
+                                    <span>Paciente</span>
+                                </label>
+                                <label className="radio-option">
+                                    <input
+                                        type="radio"
+                                        name="tipoUsuario"
+                                        value="admin"
+                                        checked={tipoUsuario === 'admin'}
+                                        onChange={(e) => setTipoUsuario(e.target.value)}
+                                        disabled={carregando}
+                                    />
+                                    <span>Administrador</span>
+                                </label>
+                            </div>
+                        </label>
+                    </div>
 
-          <div className="form-group">
-            <label className="form-label">Tipo de Usuário</label>
-            <div className="radio-group">
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="tipoUsuario"
-                  value="usuario"
-                  checked={formData.tipoUsuario === 'usuario'}
-                  onChange={handleChange}
-                />
-                <span className="radio-label">Usuário</span>
-              </label>
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="tipoUsuario"
-                  value="admin"
-                  checked={formData.tipoUsuario === 'admin'}
-                  onChange={handleChange}
-                />
-                <span className="radio-label">Administrador</span>
-              </label>
-            </div>
-          </div>
+                    <button 
+                        onClick={cadastrar} 
+                        className="btn-cadastrar"
+                        disabled={carregando}
+                    >
+                        <p>{carregando ? 'Cadastrando...' : 'Cadastrar'}</p>
+                    </button>
 
-          <button 
-            type="submit" 
-            className={`submit-button ${isSubmitting ? 'loading' : ''}`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Cadastrando...' : 'Criar Conta'}
-          </button>
-        </form>
-
-        <div className="login-link">
-          <p>Já tem uma conta? <a href="/login">Faça login</a></p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
+                    <div className="jatemconta">
+                        <p>Já tem uma conta?</p>
+                        <button onClick={() => navigate('/')}> 
+                            Fazer Login
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </section>
+    )
+}
