@@ -1,12 +1,13 @@
-drop database if exists robson;
-create database robson;
-use robson;
+DROP DATABASE IF EXISTS robson;
+CREATE DATABASE robson;
+USE robson;
 
-create table Cadastro (
-id int primary key auto_increment,
-nome varchar(100),
-data_nascimento date,
-email varchar(50),
-senha varchar(10),
-tipo ENUM('paciente', 'admin') DEFAULT 'paciente'
+CREATE TABLE Cadastro (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    senha VARCHAR(32) NOT NULL, 
+    tipo ENUM('paciente', 'admin') DEFAULT 'paciente',
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
